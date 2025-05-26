@@ -1,51 +1,82 @@
 import { useState } from "react";
-// import reactLogo from "./assets/react.svg";
-// import viteLogo from "/vite.svg";
 import "./App.css";
 
-function App() {
-  const [
-    ,/*count*/
-    /*setCount*/
-  ] = useState(0);
+function WeatherApp() {
+  const [city, setCity] = useState("");
+
+  const [weather, setWeather] = useState(null);
+
+  const getWAppData = async () => {
+    const res = await fetch(`http://goweather.xyz/weather/${city}`);
+    const data = await res.json();
+
+    setWeather(data);
+    console.log(city);
+  };
 
   return (
-    <>
-      <div>
-        <h1 id="header">WeatherApp</h1>
-      </div>
-      <div id="container">
+    <div>
+      <h2>rain or clear skies???</h2>
+      <input
+        type="text"
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            getWAppData();
+          }
+        }}
+        placeholder="test your luck"
+      />
+      <button onClick={getWAppData}>Try it</button>
+
+      {weather && (
         <div>
-          <input id="Searchbar" placeholder="Location" />
-          <button id="Submit" type="submit">
-            Search
-          </button>
+          <div className="forecastBox">
+            {/* tomorrow */}
+            <p>A weather icon</p>
+            <p>{weather.temperature}</p>
+            <p>{weather.wind}</p>
+          </div>
+          <div className="forecastBox">
+            {/* Day after tomorrow */}
+            <p>A weather icon</p>
+            <p>{weather.temperature}</p>
+            <p>{weather.wind}</p>
+          </div>
+          <div className="forecastBox">
+            {/* Day after that day */}
+            <p>A weather icon</p>
+            <p>{weather.temperature}</p>
+            <p>{weather.wind}</p>
+          </div>
         </div>
-      </div>
-      {/* <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-      <h1>Test</h1>
-      </p> */}
-    </>
+      )}
+    </div>
   );
 }
 
-export default App;
+export default WeatherApp;
+
+/*{weather && (
+        <div>
+          <div className="forecastBox">
+            { tomorrow }
+            <p>A weather icon</p>
+            <p>{weather.temperature}</p>
+            <p>{weather.wind}</p>
+          </div>
+          <div className="forecastBox">
+            { Day after tomorrow }
+            <p>A weather icon</p>
+            <p>{weather.temperature}</p>
+            <p>{weather.wind}</p>
+          </div>
+          <div className="forecastBox">
+            { Day after that day }
+            <p>A weather icon</p>
+            <p>{weather.temperature}</p>
+            <p>{weather.wind}</p>
+          </div>
+        </div>
+      )} */
