@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import './App.css'
 
@@ -60,34 +59,7 @@ function WeatherFetcher() {
         <div id="container">
               <WeatherFetcher />
         </div>
+         <footer className="footer">Creators: Holger - Oliver - Rasmus</footer>
         </div>
     );
   }
-
-import { useState } from "react";
-
-import "./App.css";
-
-
-
-  return (
-    <>
-      <div>
-        <h1 id="header">WeatherApp</h1>
-      </div>
-      <div id="container">
-        <div>
-          <input id="Searchbar" placeholder="Location" />
-          <button id="Submit" type="submit">
-            Search
-          </button>
-        </div>
-      </div>
-     
-      <footer className="footer">Creators: Holger - Oliver - Rasmus</footer>
-    </>
-  );
-}
-
-export default App;
-
