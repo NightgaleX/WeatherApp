@@ -1,45 +1,64 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+function WeatherFetcher() {
+  const [city, setCity] = useState("");
+  const [weather, setWeather] = useState(null);
+
+  const getWeatherData = async () => {
+    const res = await fetch(`http://goweather.xyz/weather/${city}`);
+    const data = await res.json();
+
+    setWeather(data);
+    console.log(city);
+  };
 
   return (
-    <>
 
-      <div>
-        <h1 id="header">WeatherApp</h1>
-      </div>
-      <div id="container">
-        <div >
-          <input id="Searchbar" placeholder="Location" />
-          <button id="Submit" type="submit">Search</button>
-        </div>
-      </div>
-      {/* <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p> */}
-    </>
-  )
+    <WeatherRenderer
+      city={city}
+      newCity={setCity}
+      onSearch={getWeatherData}
+      weather={weather}
+    />
+  );
 }
+  function WeatherRenderer({ city, newCity, onSearch, weather }) {
+    return (
+      <div>
+        <h2>rain or clear skies???</h2>
+        <input
+          placeholder="Enter Location"
+          type="text"
+          value={city}
+          onChange={(e) => newCity(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              onSearch();
+            }
+          }}
+        />
+        <button onClick={onSearch}>Get Weather</button>
 
-export default App
+        {weather && (
+          <div>
+            <p>Temperature: {weather.temperature}</p>
+            <p>Wind: {weather.wind}</p>
+            <p>Description: {weather.description}</p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  export default function WeatherApp() {
+    return (
+        <div>
+          <h1 id="header">WeatherApp</h1>
+        
+        <div id="container">
+              <WeatherFetcher />
+        </div>
+        </div>
+    );
+  }
