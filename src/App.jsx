@@ -59,9 +59,10 @@ function WeatherFetcher() {
         <div id="container">
               <WeatherFetcher />
         </div>
+          <footer className="footer">Creators: Holger - Oliver - Rasmus</footer>
         </div>
     );
   }
 
 
-  <footer className="footer">Creators: Holger - Oliver - Rasmus</footer>
+  
