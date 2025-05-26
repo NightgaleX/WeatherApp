@@ -42,7 +42,7 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p> */}
-      <footer className="footer">Skapare: Holger - Oliver - Rasmus</footer>
+      <footer className="footer">Creators: Holger - Oliver - Rasmus</footer>
     </>
   );
 }
