@@ -98,26 +98,3 @@ export default function WeatherApp() {
     </div>
   );
 }
-
-/*{weather && (
-        <div>
-          <div className="forecastBox">
-            { tomorrow }
-            <p>A weather icon</p>
-            <p>{weather.temperature}</p>
-            <p>{weather.wind}</p>
-          </div>
-          <div className="forecastBox">
-            { Day after tomorrow }
-            <p>A weather icon</p>
-            <p>{weather.temperature}</p>
-            <p>{weather.wind}</p>
-          </div>
-          <div className="forecastBox">
-            { Day after that day }
-            <p>A weather icon</p>
-            <p>{weather.temperature}</p>
-            <p>{weather.wind}</p>
-          </div>
-        </div>
-      )} */
