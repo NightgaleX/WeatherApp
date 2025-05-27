@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 
 function WeatherFetcher() {
@@ -23,6 +23,7 @@ function WeatherFetcher() {
     />
   );
 }
+
   function WeatherRenderer({ city, newCity, onSearch, weather }) {
     return (
       <div>
@@ -51,10 +52,25 @@ function WeatherFetcher() {
     );
   }
 
+  function Clock() {
+  const [ctime, setTime] = useState(new Date().toLocaleTimeString());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(new Date().toLocaleTimeString());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return <h2>{ctime}</h2>;
+}
+
   export default function WeatherApp() {
     return (
         <div>
           <h1 id="header">WeatherApp</h1>
+          <Clock />
         
         <div id="container">
               <WeatherFetcher />
@@ -63,6 +79,3 @@ function WeatherFetcher() {
         </div>
     );
   }
-
-
-  
