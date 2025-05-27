@@ -1,12 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 
-function WeatherApp() {
+function WeatherFetcher() {
   const [city, setCity] = useState("");
-
   const [weather, setWeather] = useState(null);
 
-  const getWAppData = async () => {
+  const getWeatherData = async () => {
     const res = await fetch(`http://goweather.xyz/weather/${city}`);
     const data = await res.json();
 
@@ -15,48 +14,90 @@ function WeatherApp() {
   };
 
   return (
+    <WeatherRenderer
+      city={city}
+      newCity={setCity}
+      onSearch={getWeatherData}
+      weather={weather}
+    />
+  );
+}
+
+function WeatherRenderer({ city, newCity, onSearch, weather }) {
+  return (
     <div>
       <h2>rain or clear skies???</h2>
       <input
+        placeholder="Enter Location"
         type="text"
         value={city}
-        onChange={(e) => setCity(e.target.value)}
+        onChange={(e) => newCity(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            getWAppData();
+            onSearch();
           }
         }}
-        placeholder="test your luck"
       />
-      <button onClick={getWAppData}>Try it</button>
+      <button onClick={onSearch}>Get Weather</button>
 
       {weather && (
         <div>
-          <div className="forecastBox">
-            {/* tomorrow */}
-            <p>A weather icon</p>
-            <p>{weather.temperature}</p>
-            <p>{weather.wind}</p>
-          </div>
-          <div className="forecastBox">
-            {/* Day after tomorrow */}
-            <p>A weather icon</p>
-            <p>{weather.temperature}</p>
-            <p>{weather.wind}</p>
-          </div>
-          <div className="forecastBox">
-            {/* Day after that day */}
-            <p>A weather icon</p>
-            <p>{weather.temperature}</p>
-            <p>{weather.wind}</p>
-          </div>
+          <p>Temperature: {weather.temperature}</p>
+          <p>Wind: {weather.wind}</p>
+          <p>Description: {weather.description}</p>
         </div>
       )}
+      <div>
+        <div className="forecastBox">
+          {/*tomorrow*/}
+          <p>A weather icon</p>
+          <p>{weather.temperature}</p>
+          <p>{weather.wind}</p>
+        </div>
+        <div className="forecastBox">
+          {/*Day after tomorrow*/}
+          <p>A weather icon</p>
+          <p>{weather.temperature}</p>
+          <p>{weather.wind}</p>
+        </div>
+        <div className="forecastBox">
+          {/*Day after that day*/}
+          <p>A weather icon</p>
+          <p>{weather.temperature}</p>
+          <p>{weather.wind}</p>
+        </div>
+      </div>
     </div>
   );
 }
 
-export default WeatherApp;
+function Clock() {
+  const [ctime, setTime] = useState(new Date().toLocaleTimeString());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(new Date().toLocaleTimeString());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return <h2>{ctime}</h2>;
+}
+
+export default function WeatherApp() {
+  return (
+    <div>
+      <h1 id="header">WeatherApp</h1>
+      <Clock />
+
+      <div id="container">
+        <WeatherFetcher />
+      </div>
+      <footer className="footer">Creators: Holger - Oliver - Rasmus</footer>
+    </div>
+  );
+}
 
 /*{weather && (
         <div>
