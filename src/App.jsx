@@ -5,6 +5,7 @@ function WeatherFetcher() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
   const [searchedCity, setSearchedCity] = useState("");
+  const [backgroundImage, setBackgroundImage] = useState("");
 
   const getWeatherData = async () => {
     setSearchedCity(city);
@@ -16,6 +17,18 @@ function WeatherFetcher() {
     console.log(city);
   };
 
+  useEffect(() => {
+    if (backgroundImage) {
+      document.body.style.backgroundImage = `url(${backgroundImage})`;
+      document.body.style.backgroundSize = "cover";
+      document.body.style.backgroundPosition = "center";
+      document.body.style.backgroundRepeat = "no-repeat";
+    } else {
+      document.body.style.backgroundImage = "";
+
+    }
+  }, [backgroundImage]);
+
   return (
 <>
     <WeatherRenderer
@@ -24,7 +37,7 @@ function WeatherFetcher() {
       onSearch={getWeatherData}
       weather={weather}
     />
-    <CityImage city={searchedCity} />
+    <CityImage city={searchedCity} cityImage={setBackgroundImage} />
   </>
   );
 }
@@ -57,9 +70,7 @@ function WeatherRenderer({ city, newCity, onSearch, weather }) {
   );
 }
 
-function CityImage({ city }) {
-  const [imageUrl, setImageUrl] = useState(null);
-
+function CityImage({ city, cityImage }) {
   useEffect(() => {
     if (!city) return;
 
@@ -71,23 +82,18 @@ function CityImage({ city }) {
 
         const data = await res.json();
         const image = data.results[0]?.urls?.regular;
-        setImageUrl(image || null);
+        cityImage(image || null);
       } catch (error) {
         console.error("Error, could not get image:", error);
-        setImageUrl(null);
+        cityImage("");
       }
     };
     fetchCityImage();
-  }, [city]);
+  }, [city, cityImage]);
 
-  if (!imageUrl) return null;
-
-  return (
-    <div>
-      <img src={imageUrl} alt={city} />
-    </div>
-  );
+  return null;
 }
+
 function Clock() {
   const [ctime, setTime] = useState(new Date().toLocaleTimeString());
 
