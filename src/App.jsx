@@ -9,12 +9,17 @@ function WeatherFetcher() {
 
   const getWeatherData = async () => {
     setSearchedCity(city);
-    
-    const res = await fetch(`http://goweather.xyz/weather/${city}`);
-    const data = await res.json();
+    try {
+      const res = await fetch(`http://goweather.xyz/weather/${city}`);
+      const data = await res.json();
 
-    setWeather(data);
+      setWeather(data);
+    } catch (error) {
+      console.error("Error, could not get weather:", error);
+      setWeather("");
+    }
     console.log(city);
+
   };
 
   useEffect(() => {
@@ -30,15 +35,15 @@ function WeatherFetcher() {
   }, [backgroundImage]);
 
   return (
-<>
-    <WeatherRenderer
-      city={city}
-      newCity={setCity}
-      onSearch={getWeatherData}
-      weather={weather}
-    />
-    <CityImage city={searchedCity} cityImage={setBackgroundImage} />
-  </>
+    <>
+      <WeatherRenderer
+        city={city}
+        newCity={setCity}
+        onSearch={getWeatherData}
+        weather={weather}
+      />
+      <CityImage city={searchedCity} cityImage={setBackgroundImage} />
+    </>
   );
 }
 
