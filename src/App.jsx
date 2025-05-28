@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "./App.css";
+import { Container } from "postcss";
 
 function WeatherFetcher() {
   const [city, setCity] = useState("");
@@ -22,6 +23,16 @@ function WeatherFetcher() {
     />
   );
 }
+
+// function WeatherIcon({ weather }) {
+//   let icon = "";
+//   if (weather.description === "Partly cloudy") {
+//     console.log("It works");
+//     console.log(weather.description);
+//     icon = <FontAwesomeIcon icon="fa-solid fa-cloud-sun" />;
+//     return icon;
+//   }
+// }
 
 function WeatherRenderer({ city, newCity, onSearch, weather }) {
   return (
@@ -47,26 +58,28 @@ function WeatherRenderer({ city, newCity, onSearch, weather }) {
           <p>Description: {weather.description}</p>
         </div>
       )}
-      <div>
-        <div className="forecastBox">
-          {/*tomorrow*/}
-          <p>A weather icon</p>
-          <p>{weather.temperature}</p>
-          <p>{weather.wind}</p>
+      {weather && (
+        <div>
+          <div className="forecastBox">
+            {/*tomorrow*/}
+            {/* <WeatherIcon /> */}
+            <p>{weather.temperature}</p>
+            <p>{weather.wind}</p>
+          </div>
+          <div className="forecastBox">
+            {/*Day after tomorrow*/}
+            {/* <WeatherIcon /> */}
+            <p>{weather.temperature}</p>
+            <p>{weather.wind}</p>
+          </div>
+          <div className="forecastBox">
+            {/*Day after that day*/}
+            {/* <WeatherIcon /> */}
+            <p>{weather.temperature}</p>
+            <p>{weather.wind}</p>
+          </div>
         </div>
-        <div className="forecastBox">
-          {/*Day after tomorrow*/}
-          <p>A weather icon</p>
-          <p>{weather.temperature}</p>
-          <p>{weather.wind}</p>
-        </div>
-        <div className="forecastBox">
-          {/*Day after that day*/}
-          <p>A weather icon</p>
-          <p>{weather.temperature}</p>
-          <p>{weather.wind}</p>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
