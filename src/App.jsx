@@ -4,55 +4,102 @@ import "./App.css";
 function WeatherFetcher() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
+  const [searchedCity, setSearchedCity] = useState("");
+  const [backgroundImage, setBackgroundImage] = useState("");
 
   const getWeatherData = async () => {
-    const res = await fetch(`http://goweather.xyz/weather/${city}`);
-    const data = await res.json();
+    setSearchedCity(city);
+    try {
+      const res = await fetch(`http://goweather.xyz/weather/${city}`);
+      const data = await res.json();
 
-    setWeather(data);
+      setWeather(data);
+    } catch (error) {
+      console.error("Error, could not get weather:", error);
+      setWeather("");
+    }
     console.log(city);
+
   };
 
-  return (
+  useEffect(() => {
+    if (backgroundImage) {
+      document.body.style.backgroundImage = `url(${backgroundImage})`;
+      document.body.style.backgroundSize = "cover";
+      document.body.style.backgroundPosition = "center";
+      document.body.style.backgroundRepeat = "no-repeat";
+    } else {
+      document.body.style.backgroundImage = "";
 
-    <WeatherRenderer
-      city={city}
-      newCity={setCity}
-      onSearch={getWeatherData}
-      weather={weather}
-    />
+    }
+  }, [backgroundImage]);
+
+  return (
+    <>
+      <WeatherRenderer
+        city={city}
+        newCity={setCity}
+        onSearch={getWeatherData}
+        weather={weather}
+      />
+      <CityImage city={searchedCity} cityImage={setBackgroundImage} />
+    </>
   );
 }
 
-  function WeatherRenderer({ city, newCity, onSearch, weather }) {
-    return (
-      <div>
-        <h2>rain or clear skies???</h2>
-        <input
-          placeholder="Enter Location"
-          type="text"
-          value={city}
-          onChange={(e) => newCity(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              onSearch();
-            }
-          }}
-        />
-        <button onClick={onSearch}>Get Weather</button>
+function WeatherRenderer({ city, newCity, onSearch, weather }) {
+  return (
+    <div>
+      <h2>rain or clear skies???</h2>
+      <input
+        placeholder="Enter Location"
+        type="text"
+        value={city}
+        onChange={(e) => newCity(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            onSearch();
+          }
+        }}
+      />
+      <button onClick={onSearch}>Get Weather</button>
 
-        {weather && (
-          <div>
-            <p>Temperature: {weather.temperature}</p>
-            <p>Wind: {weather.wind}</p>
-            <p>Description: {weather.description}</p>
-          </div>
-        )}
-      </div>
-    );
-  }
+      {weather && (
+        <div>
+          <p>Temperature: {weather.temperature}</p>
+          <p>Wind: {weather.wind}</p>
+          <p>Description: {weather.description}</p>
+        </div>
+      )}
+    </div>
+  );
+}
 
-  function Clock() {
+function CityImage({ city, cityImage }) {
+  useEffect(() => {
+    if (!city) return;
+
+    const fetchCityImage = async () => {
+
+      const accessKey = import.meta.env.VITE_UNSPLASH_KEY;
+      try {
+        const res = await fetch(`https://api.unsplash.com/search/photos?query=${city}&client_id=${accessKey}`);
+
+        const data = await res.json();
+        const image = data.results[0]?.urls?.regular;
+        cityImage(image || null);
+      } catch (error) {
+        console.error("Error, could not get image:", error);
+        cityImage("");
+      }
+    };
+    fetchCityImage();
+  }, [city, cityImage]);
+
+  return null;
+}
+
+function Clock() {
   const [ctime, setTime] = useState(new Date().toLocaleTimeString());
 
   useEffect(() => {
@@ -66,16 +113,16 @@ function WeatherFetcher() {
   return <h2>{ctime}</h2>;
 }
 
-  export default function WeatherApp() {
-    return (
-        <div>
-          <h1 id="header">WeatherApp</h1>
-          <Clock />
-        
-        <div id="container">
-              <WeatherFetcher />
-        </div>
-          <footer className="footer">Creators: Holger - Oliver - Rasmus</footer>
-        </div>
-    );
-  }
+export default function WeatherApp() {
+  return (
+    <div>
+      <h1 id="header">WeatherApp</h1>
+      <Clock />
+
+      <div id="container">
+        <WeatherFetcher />
+      </div>
+      <footer className="footer">Creators: Holger - Oliver - Rasmus</footer>
+    </div>
+  );
+}
