@@ -60,7 +60,7 @@ function WeatherIcon({ weather }) {
     return <FontAwesomeIcon icon="cloud-sun" />;
   } else if (weather.description === "Cloudy") {
     return <FontAwesomeIcon icon="cloud" />;
-  } else if (weather.description === "Rainy") {
+  } else if (weather.description === "Light drizzle") {
     return <FontAwesomeIcon icon="cloud-rain" />;
   } else if (weather.description === "Lightning") {
     return <FontAwesomeIcon icon="cloud-bolt" />;
@@ -94,7 +94,9 @@ function WeatherRenderer({ city, newCity, onSearch, weather }) {
         <div>
           <p>Temperature: {weather.temperature}</p>
           <p>Wind: {weather.wind}</p>
-          <p>Description: {weather.description}</p>
+          <p>
+            Description: <WeatherIcon weather={weather} /> {weather.description}
+          </p>
         </div>
       )}
       {weather && (
