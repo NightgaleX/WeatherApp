@@ -99,28 +99,29 @@ function WeatherRenderer({ city, newCity, onSearch, weather }) {
           </p>
         </div>
       )}
-      {weather && (
-        <div>
-          <div className="forecastBox">
-            {/*tomorrow*/}
-            <WeatherIcon weather={weather} />
-            <p>{weather.temperature}</p>
-            <p>{weather.wind}</p>
+
+      <div>
+        {weather ? (
+          <div>
+            {Array.isArray(weather.forecast) && weather.forecast.length > 0 ? (
+              <div id="forecasts">
+                {weather.forecast.map((day, index) => (
+                  <div id="forecastBoxes" key={index}>
+                    <p>Day {day.day}</p>
+                    <WeatherIcon weather={weather} />
+                    <p>{day.temperature}</p>
+                    <p>{day.wind}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>No forecast data available</p>
+            )}
           </div>
-          <div className="forecastBox">
-            {/*Day after tomorrow*/}
-            <WeatherIcon weather={weather} />
-            <p>{weather.temperature}</p>
-            <p>{weather.wind}</p>
-          </div>
-          <div className="forecastBox">
-            {/*Day after that day*/}
-            <WeatherIcon weather={weather} />
-            <p>{weather.temperature}</p>
-            <p>{weather.wind}</p>
-          </div>
-        </div>
-      )}
+        ) : (
+          <p>Loading or no data available...</p>
+        )}
+      </div>
     </div>
   );
 }
