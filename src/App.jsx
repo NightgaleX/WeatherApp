@@ -32,22 +32,46 @@ library.add(
 function WeatherFetcher() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
+  const [searchedCity, setSearchedCity] = useState("");
+  const [backgroundImage, setBackgroundImage] = useState("");
 
   const getWeatherData = async () => {
-    const res = await fetch(`http://goweather.xyz/weather/${city}`);
-    const data = await res.json();
+    setSearchedCity(city);
+    try {
+      const res = await fetch(`http://goweather.xyz/weather/${city}`);
+      const data = await res.json();
 
-    setWeather(data);
+      setWeather(data);
+    } catch (error) {
+      console.error("Error, could not get weather:", error);
+      setWeather("");
+    }
     console.log(city);
+
   };
 
+  useEffect(() => {
+    if (backgroundImage) {
+      document.body.style.backgroundImage = `url(${backgroundImage})`;
+      document.body.style.backgroundSize = "cover";
+      document.body.style.backgroundPosition = "center";
+      document.body.style.backgroundRepeat = "no-repeat";
+    } else {
+      document.body.style.backgroundImage = "";
+
+    }
+  }, [backgroundImage]);
+
   return (
-    <WeatherRenderer
-      city={city}
-      newCity={setCity}
-      onSearch={getWeatherData}
-      weather={weather}
-    />
+    <>
+      <WeatherRenderer
+        city={city}
+        newCity={setCity}
+        onSearch={getWeatherData}
+        weather={weather}
+      />
+      <CityImage city={searchedCity} cityImage={setBackgroundImage} />
+    </>
   );
 }
 
@@ -124,6 +148,30 @@ function WeatherRenderer({ city, newCity, onSearch, weather }) {
       </div>
     </div>
   );
+}
+
+function CityImage({ city, cityImage }) {
+  useEffect(() => {
+    if (!city) return;
+
+    const fetchCityImage = async () => {
+
+      const accessKey = import.meta.env.VITE_UNSPLASH_KEY;
+      try {
+        const res = await fetch(`https://api.unsplash.com/search/photos?query=${city}&client_id=${accessKey}`);
+
+        const data = await res.json();
+        const image = data.results[0]?.urls?.regular;
+        cityImage(image || null);
+      } catch (error) {
+        console.error("Error, could not get image:", error);
+        cityImage("");
+      }
+    };
+    fetchCityImage();
+  }, [city, cityImage]);
+
+  return null;
 }
 
 function Clock() {
