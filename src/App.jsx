@@ -1,5 +1,33 @@
 import { useState, useEffect } from "react";
 import "./App.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faCloudSun,
+  faCloud,
+  faSun,
+  faCloudBolt,
+  faSnowflake,
+  faCloudMoon,
+  faCloudMoonRain,
+  faCloudSunRain,
+  faCloudRain,
+  faCloudShowersHeavy,
+  faMoon,
+} from "@fortawesome/free-solid-svg-icons";
+library.add(
+  faCloudSun,
+  faCloud,
+  faSun,
+  faCloudBolt,
+  faSnowflake,
+  faCloudMoon,
+  faCloudMoonRain,
+  faCloudSunRain,
+  faCloudRain,
+  faCloudShowersHeavy,
+  faMoon
+);
 
 function WeatherFetcher() {
   const [city, setCity] = useState("");
@@ -47,6 +75,28 @@ function WeatherFetcher() {
   );
 }
 
+function WeatherIcon({ weather }) {
+  if (!weather || !weather.description) return null;
+
+  if (weather.description === "Sunny") {
+    return <FontAwesomeIcon icon="sun" />;
+  } else if (weather.description === "Partly cloudy") {
+    return <FontAwesomeIcon icon="cloud-sun" />;
+  } else if (weather.description === "Cloudy") {
+    return <FontAwesomeIcon icon="cloud" />;
+  } else if (weather.description === "Light drizzle") {
+    return <FontAwesomeIcon icon="cloud-rain" />;
+  } else if (weather.description === "Lightning") {
+    return <FontAwesomeIcon icon="cloud-bolt" />;
+  } else if (weather.description === "Snowy") {
+    return <FontAwesomeIcon icon="snowflake" />;
+  } else if (weather.description === "Clear") {
+    return <FontAwesomeIcon icon="moon" />;
+  } else {
+    return <FontAwesomeIcon icon="cloud-showers-heavy" />;
+  }
+}
+
 function WeatherRenderer({ city, newCity, onSearch, weather }) {
   return (
     <div>
@@ -68,9 +118,34 @@ function WeatherRenderer({ city, newCity, onSearch, weather }) {
         <div>
           <p>Temperature: {weather.temperature}</p>
           <p>Wind: {weather.wind}</p>
-          <p>Description: {weather.description}</p>
+          <p>
+            Description: <WeatherIcon weather={weather} /> {weather.description}
+          </p>
         </div>
       )}
+
+      <div>
+        {weather ? (
+          <div>
+            {Array.isArray(weather.forecast) && weather.forecast.length > 0 ? (
+              <div id="forecasts">
+                {weather.forecast.map((day, index) => (
+                  <div id="forecastBoxes" key={index}>
+                    <p>Day {day.day}</p>
+                    <WeatherIcon weather={weather} />
+                    <p>{day.temperature}</p>
+                    <p>{day.wind}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>No forecast data available</p>
+            )}
+          </div>
+        ) : (
+          <p>Loading or no data available...</p>
+        )}
+      </div>
     </div>
   );
 }

@@ -9,6 +9,7 @@
   border-radius: 1.5rem;
   margin: auto;
   border-style: outset;
+  width: 380px;
   height: 50vh;
   align-content: end;
   padding: 1rem;
@@ -18,4 +19,15 @@
 
 input {
   margin: 1rem;
+}
+
+#forecasts {
+  display: flex;
+  flex-direction: row;
+}
+
+#forecastBoxes {
+  padding-left: 2.8rem;
+  font-size: large;
+  
 }
