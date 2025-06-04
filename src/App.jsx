@@ -36,12 +36,24 @@ function WeatherFetcher() {
   const [backgroundImage, setBackgroundImage] = useState("");
 
   const getWeatherData = async () => {
+    const cityName = city.toLowerCase();
     setSearchedCity(city);
+
+    const cachedData = localStorage.getItem(`weather_${cityName}`);
+    if (cachedData) {
+      console.log("Using cached data for:", city);
+      setWeather(JSON.parse(cachedData));
+      return;
+    }
+
     try {
       const res = await fetch(`http://goweather.xyz/weather/${city}`);
       const data = await res.json();
-
       setWeather(data);
+
+      localStorage.setItem(`weather_${cityName}`, JSON.stringify(data));
+      console.log("Weather data fetched for:", city);
+
     } catch (error) {
       console.error("Error, could not get weather:", error);
       setWeather("");
@@ -187,6 +199,20 @@ function Clock() {
 
   return <h2>{ctime}</h2>;
 }
+
+document.querySelector('form')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const city = document.querySelector('#cityInput').value;
+  const weather = await getWeatherData(city);
+
+  if (weather) {
+    document.querySelector('#output').innerHTML = `
+      <p>Temperature: ${weather.temperature}</p>
+      <p>Wind: ${weather.wind}</p>
+      <p>Description: ${weather.description}</p>
+    `;
+  }
+});
 
 export default function WeatherApp() {
   return (
