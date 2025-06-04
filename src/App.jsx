@@ -36,17 +36,38 @@ function WeatherFetcher() {
   const [backgroundImage, setBackgroundImage] = useState("");
 
   const getWeatherData = async () => {
+    const cityName = city.toLowerCase();
     setSearchedCity(city);
+
+    const cachedData = localStorage.getItem(`weather_${cityName}`);
+    const now = Date.now();
+
+    if (cachedData) {
+      const { timestamp, data } = JSON.parse(cachedData);
+      const age = now - timestamp;
+      const maxAge = 6 * 60 * 60 * 1000; // 6timmar stored.
+
+      if (age < maxAge) {
+        console.log("Using cached weather data for:", city);
+        setWeather(data);
+        return;
+      }
+    }
+
     try {
       const res = await fetch(`http://goweather.xyz/weather/${city}`);
       const data = await res.json();
-
       setWeather(data);
+
+      localStorage.setItem(
+        `weather_${cityName}`,
+        JSON.stringify({ timestamp: now, data })
+      );
+
     } catch (error) {
       console.error("Error, could not get weather:", error);
       setWeather("");
     }
-    console.log(city);
 
   };
 
@@ -154,15 +175,52 @@ function CityImage({ city, cityImage }) {
   useEffect(() => {
     if (!city) return;
 
-    const fetchCityImage = async () => {
+    const cityPicture = city.toLowerCase();
+    const cached = localStorage.getItem(`bgimg_${cityPicture}`);
+    const now = Date.now();
 
+    if (cached) {
+      const { timestamp, data } = JSON.parse(cached);
+      const age = now - timestamp;
+      const maxAge = 24 * 60 * 60 * 1000; // 24timmar stored.
+
+      if (age < maxAge && data) {
+        console.log("Using cached image for:", city);
+        cityImage(data);
+        return;
+      }
+    }
+
+
+    const fetchCityImage = async () => {
       const accessKey = import.meta.env.VITE_UNSPLASH_KEY;
+
       try {
         const res = await fetch(`https://api.unsplash.com/search/photos?query=${city}&client_id=${accessKey}`);
-
         const data = await res.json();
-        const image = data.results[0]?.urls?.regular;
-        cityImage(image || null);
+        const imageUrl = data.results[0]?.urls?.regular;
+
+        if (imageUrl) {
+          const imageRes = await fetch(imageUrl);
+          const blob = await imageRes.blob();
+
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64 = reader.result;
+            const now = Date.now();
+            localStorage.setItem(
+              `bgimg_${cityPicture}`,
+              JSON.stringify({ timestamp: Date.now(), data: base64 })
+            );
+            cityImage(base64);
+          };
+          reader.readAsDataURL(blob);
+        } else {
+          console.error("No image found for city:", city);
+          cityImage("");
+        }
+
+
       } catch (error) {
         console.error("Error, could not get image:", error);
         cityImage("");
@@ -187,6 +245,20 @@ function Clock() {
 
   return <h2>{ctime}</h2>;
 }
+
+document.querySelector('form')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const city = document.querySelector('#cityInput').value;
+  const weather = await getWeatherData(city);
+
+  if (weather) {
+    document.querySelector('#output').innerHTML = `
+      <p>Temperature: ${weather.temperature}</p>
+      <p>Wind: ${weather.wind}</p>
+      <p>Description: ${weather.description}</p>
+    `;
+  }
+});
 
 export default function WeatherApp() {
   return (
