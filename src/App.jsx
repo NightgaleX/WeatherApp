@@ -166,15 +166,37 @@ function CityImage({ city, cityImage }) {
   useEffect(() => {
     if (!city) return;
 
-    const fetchCityImage = async () => {
+    const cityPicture = city.toLowerCase();
+    const cachedImage = localStorage.getItem(`bgimg_${cityPicture}`);
+    if (cachedImage) {
+      console.log("Using cached image:", cityPicture);
+      cityImage(cachedImage);
+      return;
+    }
 
+    const fetchCityImage = async () => {
       const accessKey = import.meta.env.VITE_UNSPLASH_KEY;
+
       try {
         const res = await fetch(`https://api.unsplash.com/search/photos?query=${city}&client_id=${accessKey}`);
-
         const data = await res.json();
-        const image = data.results[0]?.urls?.regular;
-        cityImage(image || null);
+        const imageUrl = data.results[0]?.urls?.regular;
+        
+        if (imageUrl) {
+          const imageRes = await fetch(imageUrl);
+          const blob = await imageRes.blob();
+
+          const reader = new FileReader();
+          reader.onloadend = () => {
+          const base64 = reader.result;
+          localStorage.setItem(`bgimg_${cityPicture}`, base64);
+          cityImage(base64);
+        };
+        reader.readAsDataURL(blob);
+      } else {
+        console.error("No image found for city:", city);}
+        cityImage("");
+
       } catch (error) {
         console.error("Error, could not get image:", error);
         cityImage("");
